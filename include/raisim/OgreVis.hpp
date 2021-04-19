@@ -43,7 +43,7 @@ public:
   using KeyboardCallback = std::function<bool(const KeyboardEvent &)>;
   using SetUpCallback = std::function<void()>;
   using ControlCallback = std::function<void()>;
-  
+
   enum VisualizationGroup :
       unsigned long {
     RAISIM_OBJECT_GROUP = 1ul << 0,
@@ -65,7 +65,7 @@ public:
 
   /** set title of main render window **/
   void setWindowTitle(const std::string &title) { mAppName = title; }
-  
+
   /** set imgui render callback. This callback is called for every frame. */
   void setImguiRenderCallback(ImGuiRenderCallback callback) { imGuiRenderCallback_ = callback; }
 
@@ -106,10 +106,10 @@ public:
 
   /** get specific light SceneNode object for a specific light to allow moving it around **/
   Ogre::SceneNode *getLightNode(const std::string &index="default") { return lightNodes_[index]; }
-  
+
   /** add a new light to the scene **/
   std::pair<Ogre::Light*, Ogre::SceneNode*> addLight(const std::string &name);
-  
+
   /** add a new light to the scene with specific configurations **/
   std::pair<Ogre::Light*, Ogre::SceneNode*> addLight(const std::string &name,
                                                      Ogre::Light type,
@@ -117,10 +117,10 @@ public:
                                                      Ogre::Vector3 dir,
                                                      Ogre::Real power,
                                                      bool shadows);
-  
+
   void setAmbientLight(Ogre::ColourValue rgba);
-  
-  
+
+
   /** get main Ogre::Viewport**/
   Ogre::Viewport *getViewPort() { return viewport_; }
 
@@ -141,10 +141,10 @@ public:
 
   /** renders a single frame without updating simulation*/
   void renderOneFrame();
-  
+
   /** set camera speed for free motion*/
   void setCameraSpeed(float speed);
-  
+
   /** register a pair of raisim object and graphic object manually. */
   std::vector<GraphicObject> *registerSet(const std::string &name,
                                           raisim::Object *ob,
@@ -306,7 +306,7 @@ public:
   void setRemoteMode(bool remoteMode) { remoteMode_ = remoteMode; }
 
   void remoteRun();
-  
+
   VisualObject* addVisualObject(const std::string &name,
                                 const std::string &meshName,
                                 const std::string &material,
@@ -343,8 +343,16 @@ public:
                                             bool selectable = true,
                                             unsigned long int group = RAISIM_OBJECT_GROUP | RAISIM_COLLISION_BODY_GROUP);
 
+  struct keyPressStruct{
+      double forward;
+      double lateral;
+      double yaw;
+  };
+
+  keyPressStruct keyboard;
+
 private:
-  
+
   OgreVis():
     ApplicationContext("RaiSim OGRE")
   {
@@ -395,31 +403,31 @@ private:
   KeyboardCallback keyboardCallback_ = nullptr;
   SetUpCallback setUpCallback_ = nullptr;
   ControlCallback controlCallback_ = nullptr;
-  
+
   NativeWindowPair windowPair_;
   Ogre::RaySceneQuery *raySceneQuery_ = nullptr;
-  
+
   std::unordered_map<std::string, Ogre::Light*> lights_;
   std::unordered_map<std::string, Ogre::SceneNode*> lightNodes_;
-  
+
   Ogre::SceneNode *camNode_ = nullptr;
   Ogre::Camera *mainCamera_ = nullptr;
   std::unique_ptr<raisim::CameraMan> cameraMan_;
-  
+
   std::string resourceDir_;
   Ogre::SceneNode *selected_ = nullptr, *hovered_ = nullptr;
   std::vector<Ogre::Entity> *highlightEntity_;
   Ogre::SceneManager *scnMgr_;
   Ogre::Viewport *viewport_;
   Ogre::GpuProgramParametersSharedPtr mParams;
-  
+
   raisim::World *world_ = nullptr;
   SimAndGraphicsObjectPool objectSet_;
   std::map<std::string, VisualObject> visObject_;
   std::map<std::string, VisualObject> wires_;
   std::map<std::string, size_t> meshUsageCount_;
   std::set<std::string> primitiveMeshNames_;
-  
+
   double desiredFPS_ = 30.;
   int fsaa_ = 8;
   float realTimeFactor_ = 1.0;
@@ -430,7 +438,7 @@ private:
   bool rightMouseButtonPressed_ = false;
   bool leftShiftButtonPressed_ = false;
   int mouseX_ = 0, mouseY_ = 0;
-  
+
   /// visualizing simulation
   std::vector<raisim::VisualObject> contactPoints_;
   double contactPointSphereSize_ = 0.03;

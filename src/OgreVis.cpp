@@ -309,6 +309,36 @@ bool OgreVis::keyPressed(const KeyboardEvent &evt) {
   auto &key = evt.keysym.sym;
   // termination gets the highest priority
   switch (key) {
+    case OgreBites::SDLK_UP: // "Up" (the Up arrow key (navigation keypad))
+        if(keyboard.forward < 0.)
+        keyboard.forward = 0.;
+        ++keyboard.forward;
+        break;
+    case OgreBites::SDLK_DOWN: // "Down" (the Down arrow key (navigation keypad))
+        if(keyboard.forward > 0.)
+        keyboard.forward = 0.;
+        --keyboard.forward;
+        break;
+    case OgreBites::SDLK_LEFT: // "Left" (the Left arrow key (navigation keypad))
+        if(keyboard.lateral < 0.)
+        keyboard.lateral = 0.;
+        ++keyboard.lateral;
+        break;
+    case OgreBites::SDLK_RIGHT: // "Right" (the Right arrow key (navigation keypad))
+        if(keyboard.lateral > 0.)
+        keyboard.lateral = 0.;
+        --keyboard.lateral;
+        break;
+    case OgreBites::SDLK_F11:
+        if(keyboard.yaw > 0.)
+        keyboard.yaw = 0.;
+        --keyboard.yaw;
+        break;
+    case OgreBites::SDLK_F12:
+        if(keyboard.yaw < 0.)
+        keyboard.yaw = 0.;
+        ++keyboard.yaw;
+        break;
     case OgreBites::SDLK_ESCAPE:
       getRoot()->queueEndRendering();
       break;
@@ -381,7 +411,7 @@ void OgreVis::setup() {
   Ogre::RTShader::ShaderGenerator *shadergen = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
   shadergen->addSceneManager(scnMgr_);
   raySceneQuery_ = scnMgr_->createRayQuery(Ogre::Ray());
-  
+
   // Configure scene default lighting
   lights_.clear();
   lightNodes_.clear();
@@ -757,10 +787,10 @@ std::vector<GraphicObject> *OgreVis::createGraphicalObject(raisim::Compound *com
     auto visname = name + "_ch_" + std::to_string(i);
     raisim::Vec<3> dim;
     std::string meshName;
-    raisim::Vec<3> capOffsetRaw, capOffset;    
+    raisim::Vec<3> capOffsetRaw, capOffset;
     switch(ch[i].objectType) {
       case raisim::ObjectType::BOX :
-        meshName = "cubeMesh";        
+        meshName = "cubeMesh";
         dim = {ch[i].objectParam[0], ch[i].objectParam[1], ch[i].objectParam[2]};
         break;
       case raisim::ObjectType::SPHERE :
@@ -843,7 +873,7 @@ void OgreVis::registerRaisimGraphicalObjects(raisim::VisObject &vo,
     auto visname = name + "_" + as->getBodyNames()[vo.localIdx] + "_";
     raisim::Vec<3> dim;
     std::string meshName;
-    raisim::Vec<3> capOffsetRaw, capOffset;    
+    raisim::Vec<3> capOffsetRaw, capOffset;
 
     switch (vo.shape) {
       case raisim::Shape::Box :
@@ -1226,7 +1256,7 @@ void OgreVis::renderOneFrame() {
     auto nContact = contactProblem->size();
 
     sync();
-    
+
     /// initially set everything to false
     for (auto &con : contactPoints_)
       con.graphics->setVisible(false);
@@ -1293,7 +1323,7 @@ void OgreVis::renderOneFrame() {
       }
     }
   }
-  
+
   for (auto &vob: visObject_) {
     vob.second.graphics->setVisible(vob.second.group & mask_);
     updateVisualizationObject(vob.second);
@@ -1349,7 +1379,7 @@ void OgreVis::closeApp() {
   imGuiSetupCallback_ = nullptr;
   keyboardCallback_ = nullptr;
   setUpCallback_ = nullptr;
-  controlCallback_ = nullptr;  
+  controlCallback_ = nullptr;
   if(singletonPtr) singletonPtr.reset(nullptr);
 
 }
